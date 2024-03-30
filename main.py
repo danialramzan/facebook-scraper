@@ -13,6 +13,11 @@ import os
 profile_path = os.getenv('FIREFOX_PROFILE_PATH')
 facebook_group_url = os.getenv('FACEBOOK_GROUP_URL') + '?sorting_setting=CHRONOLOGICAL'
 
+# css class names
+all_post_classnames = os.getenv('ALL_POST_CLASSNAMES')
+all_names_classname = os.getenv('ALL_NAMES_CLASSNAME')
+all_content_classname = os.getenv('ALL_CONTENT_CLASSNAME')
+all_timestamps_classname = os.getenv('ALL_TIMESTAMPS_CLASSNAME')
 
 # firefox driver options: disable notifs, path to profile to use
 firefox_options = Options()
@@ -37,21 +42,29 @@ sleep(2)
 
 while True:
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    all_posts = soup.find_all("div", {"class": "x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z"})
+    all_posts = soup.find_all("div", {"class": all_post_classnames})
     for post in all_posts:
         try:
             name = post.find("a", {
-                "class": "x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xzsf02u x1s688f"})
+                "class": all_names_classname}).get_text()
         except:
             name = "not found"
         print(name)
         try:
-            content = post.find("span", {"class": "x193iq5w xeuugli x13faqbe x1vvkbs x10flsy6 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x41vudc x6prxxf xvq8zen xo1l8bm xzsf02u"})
+            name = post.find("a", {
+                "class": all_names_classname}).get_text()
+        except:
+            name = "not found"
+        print(name)
+        try:
+            content = post.find("span", {
+                "class": all_content_classname}).get_text()
         except:
             content = "not found"
         print(content)
         try:
-            time = post.find("a", {"class": "x193iq5w xeuugli x13faqbe x1vvkbs x10flsy6 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x41vudc x6prxxf xvq8zen xo1l8bm xzsf02u"})
+            time = post.find("a", {
+                "class": all_timestamps_classname}).get_text()
             print(time)
         except:
             time = "not found"
@@ -62,7 +75,7 @@ while True:
 
     df = pd.DataFrame({"name": name_list, "content": content_list, "time": time_list})
     df.drop_duplicates(subset="content", keep="first", inplace=True)
-    df.to_csv("facebook_data2.csv")
+    df.to_csv("facebook_data.csv")
 
     if df.shape[0] > 10:
         break
