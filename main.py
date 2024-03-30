@@ -1,35 +1,22 @@
-# Importing selenium and the necessary options options to login to FB
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
-# from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 from dotenv import load_dotenv
 from time import sleep
-
+from bs4 import BeautifulSoup
+import pandas as pd
 import os
 
-# Importing time libraries to add wait times
-
-# Importing beautiful soup to read the page html source code
-
-# To create csv file where we'll scrape the content
-
-# We'll also add the options functionality to disable notifications
-
-# chrome_options = Options()
-firefox_options = Options()
-# Disable notifications
-# chrome_options.add_argument("--disable-notifications")
-
-
+# get info from dotenv file
 profile_path = os.getenv('FIREFOX_PROFILE_PATH')
-facebook_group_url = os.getenv('FACEBOOK_GROUP_URL')
+facebook_group_url = os.getenv('FACEBOOK_GROUP_URL') + '?sorting_setting=CHRONOLOGICAL'
 
+
+# firefox driver options: disable notifs, path to profile to use
+firefox_options = Options()
 firefox_options.add_argument("--disable-notifications")
-
 firefox_options.add_argument("-profile")
 firefox_options.add_argument(profile_path)
 
@@ -40,32 +27,31 @@ name_list = []
 service = Service(GeckoDriverManager().install())
 firefox_profile = FirefoxProfile()
 
-# driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=options)
-
 driver = webdriver.Firefox(service=service, options=firefox_options)
-# driver = webdriver.Firefox(service=GeckoDriverManager().install(), options = firefox_options)
 driver.get(facebook_group_url)
 driver.maximize_window()
 
+
+# give time for page to load
 sleep(2)
 
 while True:
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    all_posts = soup.find_all("div", {"class": "du4w35lb k4urcfbm l9j0dhe7 sjgh65i0"})
+    all_posts = soup.find_all("div", {"class": "x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z"})
     for post in all_posts:
         try:
             name = post.find("a", {
-                "class": "oajrlxb2 gs5ia77u qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 alzwoclg mc1re8zz eojpzvty tkr6xdv7"})
+                "class": "x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xzsf02u x1s688f"})
         except:
             name = "not found"
         print(name)
         try:
-            content = post.find("span", {"class": "d2edcug0 hpfvmrgz qv66sw1b c1et5uql o1r32d6d ik7dh3pa hts83030"})
+            content = post.find("span", {"class": "x193iq5w xeuugli x13faqbe x1vvkbs x10flsy6 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x41vudc x6prxxf xvq8zen xo1l8bm xzsf02u"})
         except:
             content = "not found"
         print(content)
         try:
-            time = post.find("a", {"class": "oajrlxb2 gs5ia77u qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9"})
+            time = post.find("a", {"class": "x193iq5w xeuugli x13faqbe x1vvkbs x10flsy6 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x41vudc x6prxxf xvq8zen xo1l8bm xzsf02u"})
             print(time)
         except:
             time = "not found"
@@ -81,9 +67,9 @@ while True:
     if df.shape[0] > 10:
         break
 
-    sleep(5)
+    sleep(2)
     y = 500
-    for timer in range(0, 25):
+    for timer in range(0, 5):
         driver.execute_script("window.scrollTo(0, " + str(y) + ")")
         y += 500
         sleep(3)
