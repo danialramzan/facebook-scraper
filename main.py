@@ -40,16 +40,12 @@ driver.maximize_window()
 # give time for page to load
 sleep(2)
 
+y = 500
+
 while True:
     soup = BeautifulSoup(driver.page_source, "html.parser")
     all_posts = soup.find_all("div", {"class": all_post_classnames})
     for post in all_posts:
-        try:
-            name = post.find("a", {
-                "class": all_names_classname}).get_text()
-        except:
-            name = "not found"
-        print(name)
         try:
             name = post.find("a", {
                 "class": all_names_classname}).get_text()
@@ -81,8 +77,7 @@ while True:
         break
 
     sleep(2)
-    y = 500
-    for timer in range(0, 5):
+    for timer in range(0, 25):
         driver.execute_script("window.scrollTo(0, " + str(y) + ")")
         y += 500
         sleep(3)
